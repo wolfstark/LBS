@@ -22,6 +22,7 @@
         await this.loaderJSDK()
         this.createMap(container)
         await this.installPlugin(plugin)
+        await this.installService()
       },
       loaderJSDK () {
         return new Promise((resolve) => {
@@ -42,6 +43,13 @@
           })
         })
       },
+      installService () {
+        return new Promise((resolve) => {
+          AMap.service(['AMap.CloudDataSearch'], () => {
+            resolve()
+          })
+        })
+      },
       createMap (container) {
         this.map = new AMap.Map(container, {
           resizeEnable: true
@@ -56,13 +64,11 @@
           orderBy: '_id:ASC'
         }
         // 加载CloudDataSearch服务
-        AMap.service(['AMap.CloudDataSearch'], () => {
-          this.search = new AMap.CloudDataSearch('59c22ed12376c11dabb62231', searchOptions)
-          this.search.searchNearBy(center, 5000, (...args) => {
-            console.log(args)
-          })
-          AMap.event.addListener(this.search, 'listElementClick', this.onlistElementClick)
+        this.search = new AMap.CloudDataSearch('59c22ed12376c11dabb62231', searchOptions)
+        this.search.searchNearBy(center, 5000, (...args) => {
+          console.log(args)
         })
+        AMap.event.addListener(this.search, 'listElementClick', this.onlistElementClick)
       },
       addToolBar () {
         this.map.addControl(new AMap.ToolBar())
